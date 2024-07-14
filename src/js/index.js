@@ -16,7 +16,7 @@ let timeoutId;
 
 // Inicializa los números aleatorios para el tablero
 // generamos un numero aleatorio entre 1 y 99
-const getRandomNumber = () => Math.floor(Math.random() * 99 + 1);
+const getRandomNumber = () => Math.floor(Math.random() * 100);
 
 // genera un array de 15 números aleatorios ente 1 y 99
 const generateUniqueNumbers = () => {
@@ -48,7 +48,10 @@ const insertNumbers = boardElement => {
 
 // Marca un númer del tablero del usuario o pc cuando es seleccionado
 const updateMarkedNumbers = (number, boardElement, className) => {
+  // [...]convierte en una array
   [...boardElement.children].forEach(child => {
+    // child.dataset.number accede al valor del atributo data-number del hijo actual.
+    // Number lo convierte en un numero
     if (Number(child.dataset.number) === number) {
       child.classList.add(className);
     }
@@ -83,22 +86,31 @@ const drawNumber = () => {
 };
 
 // Función principal del juego que saca un número, lo muestra y actualiza el tablero hasta que el juego termina.
+let intervalId;
+
 const playGame = () => {
-  clearTimeout(timeoutId);
+  clearInterval(intervalId); // Limpia cualquier intervalo previo
   gameTextElement.classList.remove('hide');
 
-  if (numbers.length > 0 && !gameOver) {
-    const number = drawNumber();
-    gameTextElement.textContent = `Número: ${number}`;
+  intervalId = setInterval(() => {
+    // Esto asegura que el juego continúe mientras haya números por jugar y el juego no haya terminado.
+    if (numbers.length > 0 && !gameOver) {
+      const number = drawNumber();
+      gameTextElement.textContent = `Número: ${number}`;
 
-    document.querySelector(`[data-bingo='${number}']`).classList.add('number-appeared');
-    updateMarkedNumbers(number, userBoardElement, 'number-user-correct');
-    updateMarkedNumbers(number, pcBoardElement, 'number-pc-correct');
-    startButtonElement.classList.add('hide');
-    checkWinCondition();
+      document.querySelector(`[data-bingo='${number}']`).classList.add('number-appeared');
+      updateMarkedNumbers(number, userBoardElement, 'number-user-correct');
+      updateMarkedNumbers(number, pcBoardElement, 'number-pc-correct');
+      startButtonElement.classList.add('hide');
+      checkWinCondition();
 
-    timeoutId = setTimeout(playGame, 200);
-  }
+      if (gameOver) {
+        clearInterval(intervalId);
+      }
+    } else {
+      clearInterval(intervalId); // Detiene el intervalo si no hay más números o el juego ha terminado
+    }
+  }, 100);
 };
 
 // Reinicia el juego
