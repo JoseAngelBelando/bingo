@@ -10,7 +10,10 @@ const startButtonElement = document.getElementById('button-start');
 const restartButtonElement = document.getElementById('button-restart');
 const gameTextElement = document.getElementById('game-text');
 
-let numbers = Array.from({ length: 99 }, (_, index) => index + 1);
+let numbers = [];
+for (let i = 1; i <= 99; i++) {
+  numbers.push(i);
+}
 let gameOver = false;
 let timeoutId;
 
@@ -68,11 +71,16 @@ const checkWinCondition = () => {
     restartButtonElement.classList.remove('hide');
     userTextElement.textContent = 'USER WIN';
     pcTextElement.textContent = 'PC LOSE';
+
+    document.body.classList.add('user-win'); // Añadir clase para victoria del usuario
   } else if (pcCorrectNumbers.length === 15) {
     gameOver = true;
     restartButtonElement.classList.remove('hide');
     userTextElement.textContent = 'USER LOSE';
     pcTextElement.textContent = 'PC WIN';
+
+    document.body.classList.add('pc-win'); // Añadir clase para victoria del PC
+
     console.log('PERDISTE');
   }
 };
@@ -118,10 +126,24 @@ const resetGame = () => {
   numbers = Array.from({ length: 99 }, (_, index) => index + 1);
   gameOver = false;
   timeoutId = undefined;
+  userTextElement.textContent = '';
+  pcTextElement.textContent = '';
 
-  [...bingoBoardElement.children].forEach(child => child.classList.remove('number-appeared'));
-  [...userBoardElement.children].forEach(child => child.classList.remove('number-user-correct'));
-  [...pcBoardElement.children].forEach(child => child.classList.remove('number-pc-correct'));
+  document.body.backgroundColor = '';
+  document.body.backgroundColor = '';
+  document.body.classList.remove('user-win', 'pc-win');
+  document.body.backgroundColor = 'aliceblue'; // Restablecer el color de fondo a aliceblue
+  const clearClasses = (parentElement, className) => {
+    const children = parentElement.children;
+    for (let i = 0; i < children.length; i++) {
+      children[i].classList.remove(className);
+    }
+  };
+
+  clearClasses(bingoBoardElement, 'number-appeared');
+  clearClasses(userBoardElement, 'number-user-correct');
+  clearClasses(pcBoardElement, 'number-pc-correct');
+
   restartButtonElement.classList.add('hide');
   playGame();
 };
